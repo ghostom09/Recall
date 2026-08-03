@@ -4,37 +4,53 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    public event Action<Vector2> Move;
-    
+    public event Action<Vector2> MoveChanged;
+    public event Action JumpPressed;
+    public event Action JumpReleased;
+
     private InputSystem_Actions _input;
 
     private void Awake()
     {
-        _input = new();
+        _input = new InputSystem_Actions();
     }
 
     private void OnEnable()
     {
         _input.Player.Enable();
+
         _input.Player.Move.performed += OnMove;
         _input.Player.Move.canceled += OnMove;
-    }
 
-    private void OnMove(InputAction.CallbackContext context)
-    {
-        var move = context.ReadValue<Vector2>();
-        Move?.Invoke(move);
+        _input.Player.Jump.started += OnJump;
+        _input.Player.Jump.canceled += OnJump;
     }
 
     private void OnDisable()
     {
         _input.Player.Move.performed -= OnMove;
         _input.Player.Move.canceled -= OnMove;
+
+        _input.Player.Jump.started -= OnJump;
+        _input.Player.Jump.canceled -= OnJump;
+
         _input.Player.Disable();
     }
-    
-    private void OnDestroy()
+
+    private void OnMove(InputAction.CallbackContext context)
     {
-        _input.Dispose();
+        MoveChanged?.Invoke(context.ReadValue<Vector2>());
+    }
+
+    private void OnJump(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            JumpPressed?.Invoke();
+        }
+        else if (context.canceled)
+        {
+            JumpReleased?.Invoke();
+        }
     }
 }

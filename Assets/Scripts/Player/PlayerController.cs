@@ -1,25 +1,29 @@
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerInputHandler))]
-[RequireComponent(typeof(PlayerAction))]
 public class PlayerController : MonoBehaviour
 {
-    private PlayerInputHandler _input;
-    private PlayerAction _action;
+    [Header("References")]
+    [SerializeField] private PlayerInputHandler inputHandler;
+    [SerializeField] private PlayerGroundChecker groundChecker;
+    [SerializeField] private PlayerAction playerAction;
 
-    void Awake()
-    {
-        _input = GetComponent<PlayerInputHandler>();
-        _action = GetComponent<PlayerAction>();
-    }
-    
     private void OnEnable()
     {
-        _input.Move += _action.OnMove;
+        inputHandler.MoveChanged += playerAction.OnMove;
+        inputHandler.JumpPressed += playerAction.OnJump;
+        inputHandler.JumpReleased += playerAction.OnReleaseJump;
+
+        groundChecker.GroundedChanged += playerAction.SetGrounded;
+
+        playerAction.SetGrounded(groundChecker.IsGrounded);
     }
 
     private void OnDisable()
     {
-        _input.Move -= _action.OnMove;
+        inputHandler.MoveChanged -= playerAction.OnMove;
+        inputHandler.JumpPressed -= playerAction.OnJump;
+        inputHandler.JumpReleased -= playerAction.OnReleaseJump;
+
+        groundChecker.GroundedChanged -= playerAction.SetGrounded;
     }
 }
