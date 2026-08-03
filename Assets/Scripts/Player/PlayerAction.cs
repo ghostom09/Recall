@@ -65,6 +65,11 @@ public class PlayerAction : MonoBehaviour
         _hasTouchedGround = true;
         _remainingAirJumps = maxJumpCount - 1;
         _coyoteTimer = coyoteTime;
+        
+        if (_jumpBufferTimer > 0f)
+        {
+            TryJump();
+        }
     }
 
     public void OnJump()
