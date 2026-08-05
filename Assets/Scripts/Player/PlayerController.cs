@@ -8,10 +8,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerStat data;
     [SerializeField] private Health health;
     [SerializeField] private PlayerAction playerAction;
+    [SerializeField] private PlayerAttack playerAttack;
 
     private void Awake()
     {
         health.Initialize(data.MaxHealth);
+        playerAttack.GetAttackDamage(data.Damage);
     }
 
     private void OnEnable()
@@ -19,6 +21,7 @@ public class PlayerController : MonoBehaviour
         inputHandler.MoveChanged += playerAction.OnMove;
         inputHandler.JumpPressed += playerAction.OnJump;
         inputHandler.JumpReleased += playerAction.OnReleaseJump;
+        inputHandler.Attack += playerAttack.OnAttack;
 
         groundChecker.GroundedChanged += playerAction.SetGrounded;
         
@@ -32,12 +35,10 @@ public class PlayerController : MonoBehaviour
         inputHandler.MoveChanged -= playerAction.OnMove;
         inputHandler.JumpPressed -= playerAction.OnJump;
         inputHandler.JumpReleased -= playerAction.OnReleaseJump;
+        inputHandler.Attack -= playerAttack.OnAttack;
 
         groundChecker.GroundedChanged -= playerAction.SetGrounded;
-    }
-   
-    private void OnDestroy()
-    {
+        
         health.Died -= HandleDeath;
     }
 

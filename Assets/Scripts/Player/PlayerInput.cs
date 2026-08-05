@@ -7,6 +7,7 @@ public class PlayerInputHandler : MonoBehaviour
     public event Action<Vector2> MoveChanged;
     public event Action JumpPressed;
     public event Action JumpReleased;
+    public event Action Attack;
 
     private InputSystem_Actions _input;
 
@@ -24,6 +25,8 @@ public class PlayerInputHandler : MonoBehaviour
 
         _input.Player.Jump.started += OnJump;
         _input.Player.Jump.canceled += OnJump;
+
+        _input.Player.Attack.performed += OnAttack;
     }
 
     private void OnDisable()
@@ -33,6 +36,8 @@ public class PlayerInputHandler : MonoBehaviour
 
         _input.Player.Jump.started -= OnJump;
         _input.Player.Jump.canceled -= OnJump;
+
+        _input.Player.Attack.performed -= OnAttack;
 
         _input.Player.Disable();
     }
@@ -52,5 +57,10 @@ public class PlayerInputHandler : MonoBehaviour
         {
             JumpReleased?.Invoke();
         }
+    }
+
+    private void OnAttack(InputAction.CallbackContext context)
+    {
+        Attack?.Invoke();
     }
 }
