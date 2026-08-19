@@ -8,6 +8,8 @@ public class PlayerInputHandler : MonoBehaviour
     public event Action JumpPressed;
     public event Action JumpReleased;
     public event Action Attack;
+    public event Action Dash;
+    public event Action Return;
 
     private InputSystem_Actions _input;
 
@@ -27,6 +29,9 @@ public class PlayerInputHandler : MonoBehaviour
         _input.Player.Jump.canceled += OnJump;
 
         _input.Player.Attack.performed += OnAttack;
+        
+        _input.Player.Dash.performed += OnDash;
+        _input.Player.DashReturn.performed += OnReturn;
     }
 
     private void OnDisable()
@@ -62,5 +67,15 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnAttack(InputAction.CallbackContext context)
     {
         Attack?.Invoke();
+    }
+
+    private void OnDash(InputAction.CallbackContext context)
+    {
+        Dash?.Invoke();
+    }
+
+    private void OnReturn(InputAction.CallbackContext context)
+    {
+        Return?.Invoke();
     }
 }

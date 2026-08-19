@@ -32,6 +32,8 @@ public class PlayerAction : MonoBehaviour
     private int _remainingAirJumps;
     private float _jumpBufferTimer;
 
+    private bool _useDash = false;
+
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -46,6 +48,11 @@ public class PlayerAction : MonoBehaviour
     private void FixedUpdate()
     {
         Move();
+    }
+
+    public void SetMovementLocked(bool locked)
+    {
+        _useDash = locked;
     }
 
     public void OnMove(Vector2 value)
@@ -74,6 +81,7 @@ public class PlayerAction : MonoBehaviour
 
     public void OnJump()
     {
+        if (_useDash) return;
         _jumpBufferTimer = jumpBufferTime;
         TryJump();
     }
@@ -139,6 +147,8 @@ public class PlayerAction : MonoBehaviour
 
     private void Move()
     {
+        if (_useDash) return;
+        
         float targetX = _movement.x * speed;
 
         float changeSpeed = _movement.x == 0f
