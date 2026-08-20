@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     {
         health.Initialize(data.MaxHealth);
         playerAttack.GetAttackDamage(data.Damage);
+        playerAction.GetData(data);
+        playerSkill.GetData(data);
     }
 
     private void OnEnable()

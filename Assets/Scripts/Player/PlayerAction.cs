@@ -50,6 +50,12 @@ public class PlayerAction : MonoBehaviour
         Move();
     }
 
+    public void GetData(PlayerStat data)
+    {
+        jumpPower = data.jumpPower;
+        speed = data.Speed;
+    }
+
     public void SetMovementLocked(bool locked)
     {
         _useDash = locked;

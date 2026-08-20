@@ -1139,7 +1139,11 @@ MonoBehaviour:
   dashPower: 25
   dashDuration: 0.2
   playerCameraController: {fileID: 1334852239}
-  dashCoolTime: 3
+  afterImage: {fileID: 1583735561749042402, guid: bdcc8e7dc36d16a48ac0c0e88fbe2be2, type: 3}
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  returnTime: 3
 --- !u!1 &1200998210
 GameObject:
   m_ObjectHideFlags: 0

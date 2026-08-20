@@ -43,6 +43,9 @@ public class PlayerInputHandler : MonoBehaviour
         _input.Player.Jump.canceled -= OnJump;
 
         _input.Player.Attack.performed -= OnAttack;
+        
+        _input.Player.Dash.performed -= OnDash;
+        _input.Player.DashReturn.performed -= OnReturn;
 
         _input.Player.Disable();
     }
