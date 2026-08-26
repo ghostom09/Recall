@@ -24,6 +24,7 @@ public class Health : MonoBehaviour, IDamageable
             return;
 
         Current = Mathf.Max(Current - damage, 0);
+        Debug.LogWarning($"<color=blue>{gameObject.name}</color>이 <color=red>{damage}</color>를 입었습니다.");
         HealthChanged?.Invoke(Current, Max);
 
         if (IsDead)

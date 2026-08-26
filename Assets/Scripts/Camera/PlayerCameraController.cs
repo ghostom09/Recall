@@ -5,6 +5,7 @@ using System.Collections;
 public class PlayerCameraController : MonoBehaviour
 {
     [SerializeField] private CinemachinePositionComposer positionComposer;
+    [SerializeField] private CinemachineImpulseSource impulseSource;
 
     [SerializeField] private Vector2 returnDamping = new Vector3(1f, 2f);
     [SerializeField] private float returnCameraDuration = 0.5f;
@@ -28,5 +29,10 @@ public class PlayerCameraController : MonoBehaviour
         yield return new WaitForSeconds(returnCameraDuration);
 
         positionComposer.Damping = _normalDamping;
+    }
+
+    public void CameraShake(float power)
+    {
+        impulseSource.GenerateImpulse(power);
     }
 }

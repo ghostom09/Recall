@@ -10,6 +10,7 @@ public class PlayerSkill : MonoBehaviour
     [SerializeField] private PlayerCameraController playerCameraController;
     [SerializeField] private GameObject afterImage;
     [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private float returnAttackHeight = 1.7f;
     private GameObject _tempAfterImage;
     
     private Rigidbody2D _rb;
@@ -29,6 +30,11 @@ public class PlayerSkill : MonoBehaviour
     
     private bool _isDashing;
     private bool _canReturn = false;
+
+    private Vector2 _lastAttackCenter;
+    private Vector2 _lastAttackSize;
+    private float _lastAttackAngle;
+    private bool _hasAttackPreview;
     
     public event Action<bool> DashStateChanged; 
 
@@ -108,10 +114,10 @@ public class PlayerSkill : MonoBehaviour
     public void OnReturn()
     {
         if (!_canReturn) return;
+        Attack();
         _canReturn = false;
         transform.position = _startPos;
 
-        Attack();
         
         if (_tempAfterImage)
         {
@@ -125,16 +131,19 @@ public class PlayerSkill : MonoBehaviour
     {
         Vector2 start = transform.position;
         Vector2 end = _startPos;
-        float height = 3f;
         
         Vector2 center = (start + end) / 2f;
 
         float width = Vector2.Distance(start, end);
-        Vector2 size = new Vector2(width, height);
+        Vector2 size = new Vector2(width, returnAttackHeight);
 
         Vector2 direction = end - start;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        angle2 = angle;
+
+        _lastAttackCenter = center;
+        _lastAttackSize = size;
+        _lastAttackAngle = angle;
+        _hasAttackPreview = true;
         
         Collider2D[] hits = Physics2D.OverlapBoxAll(
             center,
@@ -155,8 +164,6 @@ public class PlayerSkill : MonoBehaviour
             target.TakeDamage(1);
         }
     }
-
-    private float angle2;
 
     private void UpdateTimer()
     {
@@ -180,19 +187,21 @@ public class PlayerSkill : MonoBehaviour
         }
     }
     
-    // private void OnDrawGizmosSelected()
-    // {
-    //     Gizmos.color = Color.red;
-    //
-    //     Matrix4x4 previousMatrix = Gizmos.matrix;
-    //
-    //     Gizmos.matrix = Matrix4x4.TRS(
-    //         start,
-    //         angle2,
-    //         Vector3.one
-    //     );
-    //
-    //     Gizmos.DrawWireCube(Vector3.zero, attackSize);
-    //     Gizmos.matrix = previousMatrix;
-    // }
+    private void OnDrawGizmosSelected()
+    {
+        if (!_hasAttackPreview)
+            return;
+
+        Gizmos.color = Color.blue;
+
+        Matrix4x4 previousMatrix = Gizmos.matrix;
+        Gizmos.matrix = Matrix4x4.TRS(
+            _lastAttackCenter,
+            Quaternion.Euler(0f, 0f, _lastAttackAngle),
+            Vector3.one
+        );
+
+        Gizmos.DrawWireCube(Vector3.zero, _lastAttackSize);
+        Gizmos.matrix = previousMatrix;
+    }
 }

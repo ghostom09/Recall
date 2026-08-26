@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Timers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,17 +9,30 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private Transform attackPoint;
     [SerializeField] private Vector2 attackSize = new(2f, 1f);
     [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private float attackSpeed;
+    [SerializeField] private GameObject attackEffect;
 
+    private bool _canAttack = true;
     private bool _isFacingRight = true;
     private int _damage;
+    private GameObject _tempAttackEffect;
+    private float _attackTimer;
+
+    private void Update()
+    {
+        UpdateTimer();
+    }
 
     public void GetAttackDamage(int damage)
     {
         _damage = damage;
     }
 
-    public void OnAttack()
+    public bool TryAttack()
     {
+        if (!_canAttack)
+            return false;
+        
         Vector2 mouseScreenPosition = Mouse.current.position.ReadValue();
         Vector2 mouseWorldPosition =
             Camera.main.ScreenToWorldPoint(mouseScreenPosition);
@@ -28,6 +42,7 @@ public class PlayerAttack : MonoBehaviour
         
         UpdateAttackDirection(direction.x);
         ApplyDamage();
+        return true;
     }
 
     private void UpdateAttackDirection(float direction)
@@ -48,6 +63,8 @@ public class PlayerAttack : MonoBehaviour
 
     private void ApplyDamage()
     {
+        
+        _tempAttackEffect = Instantiate(attackEffect, attackPoint.position, Quaternion.identity);
         Collider2D[] hits = Physics2D.OverlapBoxAll(
             attackPoint.position,
             attackSize,
@@ -65,6 +82,22 @@ public class PlayerAttack : MonoBehaviour
                 continue;
 
             target.TakeDamage(_damage);
+        }
+
+        Destroy(_tempAttackEffect, 1f);
+        _canAttack = false;
+    }
+
+    private void UpdateTimer()
+    {
+        if(_canAttack) return;
+
+        _attackTimer -= Time.deltaTime;
+
+        if (_attackTimer <= 0f)
+        {
+            _attackTimer = attackSpeed;
+            _canAttack = true;
         }
     }
 

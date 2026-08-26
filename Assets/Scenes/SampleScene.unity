@@ -868,6 +868,8 @@ GameObject:
   - component: {fileID: 965463470}
   - component: {fileID: 965463471}
   - component: {fileID: 965463472}
+  - component: {fileID: 965463473}
+  - component: {fileID: 965463474}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -894,6 +896,9 @@ MonoBehaviour:
   playerAction: {fileID: 965463464}
   playerAttack: {fileID: 965463471}
   playerSkill: {fileID: 965463472}
+  playerCameraController: {fileID: 965463473}
+  attackMoveMultiplier: 0
+  attackMoveSlowDuration: 0.2
 --- !u!114 &965463463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1124,6 +1129,8 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 2048
+  attackSpeed: 0
+  attackEffect: {fileID: 112752295911262169, guid: 237aad9df0df4c14eaab8801f4547c55, type: 3}
 --- !u!114 &965463472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1138,12 +1145,82 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSkill
   dashPower: 25
   dashDuration: 0.2
-  playerCameraController: {fileID: 1334852239}
+  playerCameraController: {fileID: 965463473}
   afterImage: {fileID: 1583735561749042402, guid: bdcc8e7dc36d16a48ac0c0e88fbe2be2, type: 3}
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
+  returnAttackHeight: 3
   returnTime: 3
+--- !u!114 &965463473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 965463460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42dbe8d29915c01468839e3f4f08242c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCameraController
+  positionComposer: {fileID: 1334852236}
+  impulseSource: {fileID: 965463474}
+  returnDamping: {x: 1, y: 2}
+  returnCameraDuration: 0.5
+--- !u!114 &965463474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 965463460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 3
+    CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ImpulseDuration: 0.2
+    ImpulseType: 0
+    DissipationRate: 0.25
+    RawSignal: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      AttackTime: 0
+      SustainTime: 0.2
+      DecayTime: 0.7
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 100
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 100
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0.13, y: -0.13, z: 0}
 --- !u!1 &1200998210
 GameObject:
   m_ObjectHideFlags: 0
@@ -1593,12 +1670,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1334852235}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42dbe8d29915c01468839e3f4f08242c, type: 3}
+  m_Script: {fileID: 11500000, guid: 00b2d199b96b516448144ab30fb26aed, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerCameraController
-  positionComposer: {fileID: 1334852236}
-  returnDamping: {x: 1, y: 2}
-  returnCameraDuration: 0.5
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseListener
+  ApplyAfter: 2
+  ChannelMask: 1
+  Gain: 0.2
+  Use2DDistance: 0
+  UseCameraSpace: 1
+  SignalCombinationMode: 0
+  ReactionSettings:
+    m_SecondaryNoise: {fileID: 0}
+    AmplitudeGain: 0.2
+    FrequencyGain: 0.2
+    Duration: 0.2
+    m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &1466066691
 GameObject:
   m_ObjectHideFlags: 0
