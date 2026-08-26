@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -10,11 +12,25 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerAction playerAction;
     [SerializeField] private PlayerAttack playerAttack;
     [SerializeField] private PlayerSkill playerSkill;
+    [SerializeField] private PlayerCameraController playerCameraController;
+
+    [Header("Attack Movement")]
+    [Range(0f, 1f)]
+    [SerializeField] private float attackMoveMultiplier = 0.35f;
+    [SerializeField] private float attackMoveSlowDuration = 0.2f;
+
+    [Header("Attack Power")]
+    [SerializeField] private float attackShakePower = 1f;
+    [SerializeField]private float skillShakePower = 3f;
+
+    private Coroutine _attackSlowCoroutine;
 
     private void Awake()
     {
         health.Initialize(data.MaxHealth);
         playerAttack.GetAttackDamage(data.Damage);
+        playerAction.GetData(data);
+        playerSkill.GetData(data);
     }
 
     private void OnEnable()
@@ -23,9 +39,9 @@ public class PlayerController : MonoBehaviour
         inputHandler.MoveChanged += playerSkill.OnMove;
         inputHandler.JumpPressed += playerAction.OnJump;
         inputHandler.JumpReleased += playerAction.OnReleaseJump;
-        inputHandler.Attack += playerAttack.OnAttack;
+        inputHandler.Attack += HandleAttack;
         inputHandler.Dash += playerSkill.OnDash;
-        inputHandler.Return += playerSkill.OnReturn;
+        inputHandler.Return += HandleSkill;
 
         groundChecker.GroundedChanged += playerAction.SetGrounded;
         
@@ -42,15 +58,65 @@ public class PlayerController : MonoBehaviour
         inputHandler.MoveChanged -= playerSkill.OnMove;
         inputHandler.JumpPressed -= playerAction.OnJump;
         inputHandler.JumpReleased -= playerAction.OnReleaseJump;
-        inputHandler.Attack -= playerAttack.OnAttack;
+        inputHandler.Attack -= HandleAttack;
         inputHandler.Dash -= playerSkill.OnDash;
-        inputHandler.Return -= playerSkill.OnReturn;
+        inputHandler.Return -= HandleSkill;
 
         groundChecker.GroundedChanged -= playerAction.SetGrounded;
         
         health.Died -= HandleDeath;
         
         playerSkill.DashStateChanged -= playerAction.SetMovementLocked;
+
+        if (_attackSlowCoroutine != null)
+        {
+            StopCoroutine(_attackSlowCoroutine);
+            _attackSlowCoroutine = null;
+        }
+
+        playerAction.SetMoveSpeedMultiplier(1f);
+    }
+
+    private void HandleAttack()
+    {
+        if (!playerAttack.TryAttack(out bool hitEnemy))
+            return;
+
+        if (_attackSlowCoroutine != null)
+        {
+            StopCoroutine(_attackSlowCoroutine);
+        }
+
+        if (hitEnemy)
+        {
+            CameraShake(attackShakePower);
+        }
+        _attackSlowCoroutine = StartCoroutine(AttackMovementSlow());
+    }
+
+    private void HandleSkill()
+    {
+        if(!playerSkill.UseSKill(out bool hitEnemy)) return;
+
+        if (hitEnemy)
+        {
+            CameraShake(skillShakePower);
+        }
+    }
+
+    private IEnumerator AttackMovementSlow()
+    {
+        playerAction.SetMoveSpeedMultiplier(attackMoveMultiplier);
+
+        yield return new WaitForSeconds(attackMoveSlowDuration);
+
+        playerAction.SetMoveSpeedMultiplier(1f);
+        _attackSlowCoroutine = null;
+    }
+
+    private void CameraShake(float power)
+    {
+        playerCameraController.CameraShake(power);
     }
 
     private void HandleDeath()

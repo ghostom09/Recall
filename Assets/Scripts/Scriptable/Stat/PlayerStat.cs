@@ -5,5 +5,7 @@ public class PlayerStat : ScriptableObject
 {
     public int MaxHealth;
     public int Damage;
-    public int Speed;
+    public float Speed;
+    public float DashCooldown;
+    public float jumpPower;
 }

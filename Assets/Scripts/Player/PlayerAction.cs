@@ -24,6 +24,7 @@ public class PlayerAction : MonoBehaviour
 
     private Vector2 _movement;
     private Rigidbody2D _rb;
+    private float _moveSpeedMultiplier = 1f;
 
     private bool _isGrounded;
     private bool _hasTouchedGround;
@@ -50,9 +51,20 @@ public class PlayerAction : MonoBehaviour
         Move();
     }
 
+    public void GetData(PlayerStat data)
+    {
+        jumpPower = data.jumpPower;
+        speed = data.Speed;
+    }
+
     public void SetMovementLocked(bool locked)
     {
         _useDash = locked;
+    }
+
+    public void SetMoveSpeedMultiplier(float multiplier)
+    {
+        _moveSpeedMultiplier = Mathf.Max(0f, multiplier);
     }
 
     public void OnMove(Vector2 value)
@@ -149,7 +161,7 @@ public class PlayerAction : MonoBehaviour
     {
         if (_useDash) return;
         
-        float targetX = _movement.x * speed;
+        float targetX = _movement.x * speed * _moveSpeedMultiplier;
 
         float changeSpeed = _movement.x == 0f
             ? deceleration
