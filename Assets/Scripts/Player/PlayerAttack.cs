@@ -28,10 +28,13 @@ public class PlayerAttack : MonoBehaviour
         _damage = damage;
     }
 
-    public bool TryAttack()
+    public bool TryAttack(out bool hitEnemy)
     {
         if (!_canAttack)
+        {
+            hitEnemy = false;
             return false;
+        }
         
         Vector2 mouseScreenPosition = Mouse.current.position.ReadValue();
         Vector2 mouseWorldPosition =
@@ -41,7 +44,7 @@ public class PlayerAttack : MonoBehaviour
             (mouseWorldPosition - (Vector2)transform.position).normalized;
         
         UpdateAttackDirection(direction.x);
-        ApplyDamage();
+        hitEnemy = ApplyDamage();
         return true;
     }
 
@@ -61,7 +64,7 @@ public class PlayerAttack : MonoBehaviour
         attackPivot.localRotation = Quaternion.Euler(0f, 0f, angle);
     }
 
-    private void ApplyDamage()
+    private bool ApplyDamage()
     {
         
         _tempAttackEffect = Instantiate(attackEffect, attackPoint.position, Quaternion.identity);
@@ -86,6 +89,7 @@ public class PlayerAttack : MonoBehaviour
 
         Destroy(_tempAttackEffect, 1f);
         _canAttack = false;
+        return damagedTargets.Count > 0;
     }
 
     private void UpdateTimer()

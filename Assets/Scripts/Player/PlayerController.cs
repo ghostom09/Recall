@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -18,6 +19,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float attackMoveMultiplier = 0.35f;
     [SerializeField] private float attackMoveSlowDuration = 0.2f;
 
+    [Header("Attack Power")]
+    [SerializeField] private float attackShakePower = 1f;
+    [SerializeField]private float skillShakePower = 3f;
+
     private Coroutine _attackSlowCoroutine;
 
     private void Awake()
@@ -36,7 +41,7 @@ public class PlayerController : MonoBehaviour
         inputHandler.JumpReleased += playerAction.OnReleaseJump;
         inputHandler.Attack += HandleAttack;
         inputHandler.Dash += playerSkill.OnDash;
-        inputHandler.Return += playerSkill.OnReturn;
+        inputHandler.Return += HandleSkill;
 
         groundChecker.GroundedChanged += playerAction.SetGrounded;
         
@@ -55,7 +60,7 @@ public class PlayerController : MonoBehaviour
         inputHandler.JumpReleased -= playerAction.OnReleaseJump;
         inputHandler.Attack -= HandleAttack;
         inputHandler.Dash -= playerSkill.OnDash;
-        inputHandler.Return -= playerSkill.OnReturn;
+        inputHandler.Return -= HandleSkill;
 
         groundChecker.GroundedChanged -= playerAction.SetGrounded;
         
@@ -74,7 +79,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleAttack()
     {
-        if (!playerAttack.TryAttack())
+        if (!playerAttack.TryAttack(out bool hitEnemy))
             return;
 
         if (_attackSlowCoroutine != null)
@@ -82,13 +87,21 @@ public class PlayerController : MonoBehaviour
             StopCoroutine(_attackSlowCoroutine);
         }
 
-        CameraShake(3f);
+        if (hitEnemy)
+        {
+            CameraShake(attackShakePower);
+        }
         _attackSlowCoroutine = StartCoroutine(AttackMovementSlow());
     }
 
     private void HandleSkill()
     {
-        
+        if(!playerSkill.UseSKill(out bool hitEnemy)) return;
+
+        if (hitEnemy)
+        {
+            CameraShake(skillShakePower);
+        }
     }
 
     private IEnumerator AttackMovementSlow()

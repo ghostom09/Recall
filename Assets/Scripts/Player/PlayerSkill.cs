@@ -111,10 +111,14 @@ public class PlayerSkill : MonoBehaviour
         _canReturn = true;
     }
 
-    public void OnReturn()
+    public bool UseSKill(out bool hitEnemy)
     {
-        if (!_canReturn) return;
-        Attack();
+        if (!_canReturn)
+        {
+            hitEnemy = false;
+            return false;
+        }
+        hitEnemy = Attack();
         _canReturn = false;
         transform.position = _startPos;
 
@@ -124,10 +128,11 @@ public class PlayerSkill : MonoBehaviour
             Destroy(_tempAfterImage);
         }
         playerCameraController.OnPlayerTeleported();
+        return true;
     }
 
     
-    private void Attack()
+    private bool Attack()
     {
         Vector2 start = transform.position;
         Vector2 end = _startPos;
@@ -163,6 +168,8 @@ public class PlayerSkill : MonoBehaviour
 
             target.TakeDamage(1);
         }
+
+        return damagedTargets.Count > 0f;
     }
 
     private void UpdateTimer()
