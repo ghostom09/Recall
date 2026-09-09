@@ -6,4 +6,7 @@ public class EnemyStat : ScriptableObject
     public int MaxHealth;
     public int Damage;
     public int Speed;
+    
+    public float detectionRange;
+    public float attackRange;
 }

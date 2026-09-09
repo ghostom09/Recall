@@ -872,7 +872,7 @@ GameObject:
   - component: {fileID: 965463474}
   m_Layer: 7
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -899,6 +899,10 @@ MonoBehaviour:
   playerCameraController: {fileID: 965463473}
   attackMoveMultiplier: 0
   attackMoveSlowDuration: 0.2
+  attackShakePower: 1
+  skillShakePower: 3
+  hurtShakePower: 2
+  hurtInvincibilityDuration: 0.7
 --- !u!114 &965463463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1129,8 +1133,8 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 2048
-  attackSpeed: 0
-  attackEffect: {fileID: 112752295911262169, guid: 237aad9df0df4c14eaab8801f4547c55, type: 3}
+  attackSpeed: 0.5
+  attackEffect: {fileID: 6178075262787506973, guid: e048ea91f9077d346b0145a8d5d2418e, type: 3}
 --- !u!114 &965463472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1151,6 +1155,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   returnAttackHeight: 3
+  returnBlockPrefab: {fileID: 6178075262787506973, guid: e048ea91f9077d346b0145a8d5d2418e, type: 3}
+  returnBlockBaseSize: {x: 1, y: 1}
+  returnBlockLifetime: 0.3
   returnTime: 3
 --- !u!114 &965463473
 MonoBehaviour:
@@ -1394,6 +1401,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   data: {fileID: 11400000, guid: 122d3294a76a58e4ca8dcdf7bef75df6, type: 2}
   health: {fileID: 1261725101}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  attackCooldown: 1
+  attackEffect: {fileID: 6178075262787506973, guid: e048ea91f9077d346b0145a8d5d2418e, type: 3}
 --- !u!114 &1261725101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1547,7 +1562,7 @@ Transform:
   m_GameObject: {fileID: 1261725099}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.47, y: 1.71, z: 0}
+  m_LocalPosition: {x: 2.44, y: -2.17, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -23,6 +23,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float attackShakePower = 1f;
     [SerializeField]private float skillShakePower = 3f;
 
+    [Header("Damage Feedback")]
+    [Min(0f)]
+    [SerializeField] private float hurtShakePower = 2f;
+    [Min(0f)]
+    [SerializeField] private float hurtInvincibilityDuration = 0.7f;
+
     private Coroutine _attackSlowCoroutine;
 
     private void Awake()
@@ -46,6 +52,7 @@ public class PlayerController : MonoBehaviour
         groundChecker.GroundedChanged += playerAction.SetGrounded;
         
         health.Died += HandleDeath;
+        health.Damaged += HandleDamage;
         
         playerSkill.DashStateChanged += playerAction.SetMovementLocked;
 
@@ -65,6 +72,7 @@ public class PlayerController : MonoBehaviour
         groundChecker.GroundedChanged -= playerAction.SetGrounded;
         
         health.Died -= HandleDeath;
+        health.Damaged -= HandleDamage;
         
         playerSkill.DashStateChanged -= playerAction.SetMovementLocked;
 
@@ -117,6 +125,12 @@ public class PlayerController : MonoBehaviour
     private void CameraShake(float power)
     {
         playerCameraController.CameraShake(power);
+    }
+
+    private void HandleDamage()
+    {
+        health.GrantInvincibility(hurtInvincibilityDuration);
+        CameraShake(hurtShakePower);
     }
 
     private void HandleDeath()

@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStat
   MaxHealth: 10000
   Damage: 5
-  Speed: 8
+  Speed: 7
+  detectionRange: 5
+  attackRange: 1.5

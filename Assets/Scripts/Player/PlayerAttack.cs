@@ -9,7 +9,8 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private Transform attackPoint;
     [SerializeField] private Vector2 attackSize = new(2f, 1f);
     [SerializeField] private LayerMask enemyLayer;
-    [SerializeField] private float attackSpeed;
+    [Min(0f)]
+    [SerializeField] private float attackSpeed = 0.5f;
     [SerializeField] private GameObject attackEffect;
 
     private bool _canAttack = true;
@@ -66,8 +67,7 @@ public class PlayerAttack : MonoBehaviour
 
     private bool ApplyDamage()
     {
-        
-        _tempAttackEffect = Instantiate(attackEffect, attackPoint.position, Quaternion.identity);
+        _tempAttackEffect = Instantiate(attackEffect, attackPoint.position, Quaternion.identity, transform);
         Collider2D[] hits = Physics2D.OverlapBoxAll(
             attackPoint.position,
             attackSize,
@@ -87,7 +87,8 @@ public class PlayerAttack : MonoBehaviour
             target.TakeDamage(_damage);
         }
 
-        Destroy(_tempAttackEffect, 1f);
+        Destroy(_tempAttackEffect, 0.5f);
+        _attackTimer = attackSpeed;
         _canAttack = false;
         return damagedTargets.Count > 0;
     }
@@ -100,7 +101,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (_attackTimer <= 0f)
         {
-            _attackTimer = attackSpeed;
+            _attackTimer = 0f;
             _canAttack = true;
         }
     }

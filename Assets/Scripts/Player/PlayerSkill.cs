@@ -11,6 +11,11 @@ public class PlayerSkill : MonoBehaviour
     [SerializeField] private GameObject afterImage;
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private float returnAttackHeight = 1.7f;
+    [Header("Return Block")]
+    [SerializeField] private GameObject returnBlockPrefab;
+    [SerializeField] private Vector2 returnBlockBaseSize = Vector2.one;
+    [Min(0.01f)]
+    [SerializeField] private float returnBlockLifetime = 0.3f;
     private GameObject _tempAfterImage;
     
     private Rigidbody2D _rb;
@@ -149,6 +154,7 @@ public class PlayerSkill : MonoBehaviour
         _lastAttackSize = size;
         _lastAttackAngle = angle;
         _hasAttackPreview = true;
+        SpawnReturnBlock(center, size, angle);
         
         Collider2D[] hits = Physics2D.OverlapBoxAll(
             center,
@@ -170,6 +176,19 @@ public class PlayerSkill : MonoBehaviour
         }
 
         return damagedTargets.Count > 0f;
+    }
+
+    private void SpawnReturnBlock(Vector2 center, Vector2 size, float angle)
+    {
+        if (returnBlockPrefab == null || size.x <= 0f)
+            return;
+
+        GameObject block = Instantiate(returnBlockPrefab, center, Quaternion.Euler(0f, 0f, angle));
+        Vector3 scale = block.transform.localScale;
+        scale.x *= size.x / Mathf.Max(0.01f, returnBlockBaseSize.x);
+        scale.y *= size.y / Mathf.Max(0.01f, returnBlockBaseSize.y);
+        block.transform.localScale = scale;
+        Destroy(block, Mathf.Max(0.01f, returnBlockLifetime));
     }
 
     private void UpdateTimer()
