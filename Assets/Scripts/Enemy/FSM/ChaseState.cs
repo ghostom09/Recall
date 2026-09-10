@@ -16,6 +16,10 @@ public class ChaseState : IState
 
     public void Update()
     {
+        if (_enemy.TryRetreat())
+        {
+            return;
+        }   
         if (_enemy.CanAttack)
         {
             _enemy.StopMoving();

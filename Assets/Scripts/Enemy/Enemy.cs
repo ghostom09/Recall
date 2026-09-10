@@ -1,21 +1,21 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private EnemyStat data;
-    [SerializeField] private Health health;
+    [SerializeField] protected EnemyStat data;
+    [SerializeField] protected Health health;
     [Header("Movement")]
-    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] protected LayerMask groundLayer;
     [Header("Attack")]
-    [SerializeField] private LayerMask playerLayer;
+    [SerializeField] protected LayerMask playerLayer;
     [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private GameObject attackEffect;
     private float _attackTimer;
     private int _previousHealth;
     private Collider2D _bodyCollider;
-    public Rigidbody2D Rb { get; private set; }
+    protected Rigidbody2D Rb { get; private set; }
     public EnemyStateMachine StateMachine { get; private set; } = new ();
     
     
@@ -32,6 +32,7 @@ public class Enemy : MonoBehaviour
     public ChaseState ChaseState { get; private set; }
     public AttackState AttackState { get; private set; }
     public HurtState HurtState { get; private set; }
+    
     #endregion
 
     private void Awake()
@@ -105,16 +106,21 @@ public class Enemy : MonoBehaviour
         Vector2.Distance(transform.position, _target.position) <= data.attackRange;
     public bool AttackReady => _attackTimer <= 0f;
 
+    public virtual bool TryRetreat()
+    {
+        return false;   
+    }
+    
+
     public void StartAttackCooldown()
     {
         _attackTimer = attackCooldown;
     }
 
-    public void Attack(float direction)
+    public virtual void Attack(float direction)
     {
-        // 플레이어처럼 박스 안의 대상을 찾아 한 번씩 데미지를 준다.
         Vector2 attackPosition = (Vector2)transform.position +
-            Vector2.right * direction * data.attackRange * 0.5f;
+            direction * data.attackRange * 0.5f * Vector2.right;
         if (attackEffect != null)
         {
             GameObject effect = Instantiate(attackEffect, attackPosition, Quaternion.identity, transform);
@@ -130,6 +136,11 @@ public class Enemy : MonoBehaviour
             if (target == null || !damagedTargets.Add(target)) continue;
             target.TakeDamage(data.Damage);
         }
+    }
+
+    public virtual void Move(float direction)
+    {
+        Rb.linearVelocity = new Vector2(direction * speed, Rb.linearVelocity.y);
     }
 
     public void StopMoving()
@@ -148,11 +159,6 @@ public class Enemy : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, 0.4f, groundLayer);
         Debug.DrawRay(origin, Vector2.down * 0.4f, Color.green);
         return hit.collider != null && !hit.collider.isTrigger;
-    }
-
-    public void Move(float direction)
-    {
-        Rb.linearVelocity = new Vector2(direction * speed, Rb.linearVelocity.y);
     }
 
     #endregion

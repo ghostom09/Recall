@@ -7,7 +7,7 @@ public interface IAttack
 
 public interface IMovement
 {
-    public void Move();
+    public void Move(float direction);
 }
 
 public interface IChase
